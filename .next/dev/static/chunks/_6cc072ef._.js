@@ -89,8 +89,8 @@ const mockUsers = [
     },
     {
         id: 2,
-        name: "Priyanshu Rai",
-        email: "priyanshu.rai@example.com",
+        name: "Priya Verma",
+        email: "priya.verma@example.com",
         skills: [
             "UI/UX Design",
             "Figma",
