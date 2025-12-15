@@ -1,0 +1,6 @@
+{
+  "/hackathons/page": "app/hackathons/page.js",
+  "/page": "app/page.js",
+  "/signup/page": "app/signup/page.js",
+  "/team-finder/page": "app/team-finder/page.js"
+}
