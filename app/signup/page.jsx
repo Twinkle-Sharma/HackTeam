@@ -85,7 +85,7 @@ export default function SignupPage() {
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="John Doe"
+                  placeholder="Enter your Name"
                   value={formData.name}
                   onChange={handleChange}
                   required
@@ -100,7 +100,7 @@ export default function SignupPage() {
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="john@example.com"
+                  placeholder="abc@example.com"
                   value={formData.email}
                   onChange={handleChange}
                   required
