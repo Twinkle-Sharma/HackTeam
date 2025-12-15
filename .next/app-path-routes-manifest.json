@@ -1,0 +1,10 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/chat/page": "/chat",
+  "/hackathons/page": "/hackathons",
+  "/page": "/",
+  "/profile/page": "/profile",
+  "/signup/page": "/signup",
+  "/team-finder/page": "/team-finder"
+}
