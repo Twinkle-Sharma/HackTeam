@@ -116,8 +116,8 @@ const defaultConversations = [
         id: 1,
         name: "Tech Innovators",
         participants: [
-            "Alex Johnson",
-            "Sarah Chen"
+            "Aarav Sharma",
+            "Priya Kapoor"
         ],
         lastMessage: "Let us finalize our project idea",
         timestamp: new Date().toISOString(),
@@ -127,7 +127,7 @@ const defaultConversations = [
         id: 2,
         name: "Code Warriors",
         participants: [
-            "Michael Brown"
+            "Rohan"
         ],
         lastMessage: "When should we meet?",
         timestamp: new Date(Date.now() - 3600000).toISOString(),
@@ -139,14 +139,14 @@ const defaultMessages = {
         {
             id: 1,
             senderId: 2,
-            senderName: "Sarah Chen",
+            senderName: "Aarav Sharma",
             text: "Hey team! Excited to work on this hackathon together!",
             timestamp: new Date(Date.now() - 7200000).toISOString()
         },
         {
             id: 2,
             senderId: 1,
-            senderName: "Alex Johnson",
+            senderName: "Priya Kapoor",
             text: "Me too! I think we should build something related to AI and healthcare.",
             timestamp: new Date(Date.now() - 6000000).toISOString()
         }
@@ -155,7 +155,7 @@ const defaultMessages = {
         {
             id: 1,
             senderId: 3,
-            senderName: "Michael Brown",
+            senderName: "Rohan",
             text: "When should we meet?",
             timestamp: new Date(Date.now() - 3600000).toISOString()
         }

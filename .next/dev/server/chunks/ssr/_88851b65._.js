@@ -84,20 +84,20 @@ const mockUsers = [
             "MongoDB"
         ],
         bio: "Full-stack developer passionate about building scalable web applications.",
-        avatar: "/developer-portrait.png",
+        avatar: "/ai-digital.jpg",
         lookingForTeam: true
     },
     {
         id: 2,
-        name: "Priya Kapoor",
-        email: "priya.kapoor@example.com",
+        name: "Priyanshu Rai",
+        email: "priyanshu.rai@example.com",
         skills: [
             "UI/UX Design",
             "Figma",
             "Product Design"
         ],
         bio: "Product designer focused on creating intuitive user experiences.",
-        avatar: "/designer-portrait.png",
+        avatar: "/Laptop.jpeg",
         lookingForTeam: true
     },
     {
@@ -110,7 +110,7 @@ const mockUsers = [
             "Data Science"
         ],
         bio: "ML engineer interested in applying AI to solve real-world problems.",
-        avatar: "/data-scientist-workspace.png",
+        avatar: "/Tech.jpeg",
         lookingForTeam: true
     },
     {
@@ -136,7 +136,7 @@ const mockUsers = [
             "Mobile Development"
         ],
         bio: "Mobile developer with 5 years of experience in iOS and Android.",
-        avatar: "/mobile-developer.png",
+        avatar: "/App.jpeg",
         lookingForTeam: true
     },
     {
@@ -149,7 +149,7 @@ const mockUsers = [
             "Docker"
         ],
         bio: "DevOps engineer specializing in cloud infrastructure and automation.",
-        avatar: "/thoughtful-engineer.png",
+        avatar: "/data-scientist-workspace.png",
         lookingForTeam: true
     }
 ];

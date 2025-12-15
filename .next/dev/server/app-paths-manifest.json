@@ -1,6 +1,7 @@
 {
-  "/hackathons/page": "app/hackathons/page.js",
+  "/chat/page": "app/chat/page.js",
   "/page": "app/page.js",
+  "/profile/page": "app/profile/page.js",
   "/signup/page": "app/signup/page.js",
   "/team-finder/page": "app/team-finder/page.js"
 }
