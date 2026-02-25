@@ -1,26 +1,98 @@
 "use client"
 
-import { useState } from "react"
-import { mockHackathons } from "@/lib/mock-data"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/contexts/auth-context"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar, MapPin, Users, Search, Globe, Building } from "lucide-react"
+import { Calendar, MapPin, Users, Search, Globe, Building, CheckCircle2 } from "lucide-react"
+import { toast } from "sonner"
 
 export default function HackathonsPage() {
+  const router = useRouter()
+  const { user } = useAuth()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterType, setFilterType] = useState("all")
+  const [hackathons, setHackathons] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [registering, setRegistering] = useState(null)
+
+  useEffect(() => {
+    const fetchHackathons = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/hackathons")
+        if (!res.ok) throw new Error("Failed to fetch")
+        const data = await res.json()
+        setHackathons(data)
+      } catch (err) {
+        console.error(err)
+        toast.error("Failed to load hackathons")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchHackathons()
+  }, [])
+
+  const handleRegister = async (hackathonId) => {
+    if (!user) {
+      toast.error("Please login to register")
+      router.push("/login")
+      return
+    }
+
+    setRegistering(hackathonId)
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`http://localhost:5000/api/hackathons/${hackathonId}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || "Registration failed")
+
+      toast.success("Successfully registered!")
+
+      setHackathons(hackathons.map(h => {
+        if (h._id === hackathonId) {
+          return {
+            ...h,
+            participants: h.participants + 1,
+            registeredUserIds: [...(h.registeredUserIds || []), user.id || user._id]
+          }
+        }
+        return h
+      }))
+    } catch (err) {
+      toast.error(err.message)
+    } finally {
+      setRegistering(null)
+    }
+  }
 
   // Filter hackathons based on search and type
-  const filteredHackathons = mockHackathons.filter((hackathon) => {
+  const filteredHackathons = hackathons.filter((hackathon) => {
     const matchesSearch =
       hackathon.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       hackathon.description.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesType = filterType === "all" || hackathon.type === filterType
     return matchesSearch && matchesType
   })
+
+  if (loading) {
+    return (
+      <div className="container py-16 flex justify-center items-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="container py-16">
@@ -70,72 +142,91 @@ export default function HackathonsPage() {
 
       {/* Hackathons Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredHackathons.map((hackathon) => (
-          <Card
-            key={hackathon.id}
-            className="group overflow-hidden border-border bg-card hover:border-primary/50 transition-all"
-          >
-            {/* Hackathon Image */}
-            <div className="relative h-48 w-full overflow-hidden bg-muted">
-              <img
-                src={hackathon.image || "/placeholder.svg"}
-                alt={hackathon.name}
-                className="h-full w-full object-cover transition-transform group-hover:scale-105"
-              />
-              <Badge
-                className={`absolute right-3 top-3 ${
-                  hackathon.type === "online"
-                    ? "bg-accent/90 text-accent-foreground"
-                    : "bg-primary/90 text-primary-foreground"
-                }`}
-              >
-                {hackathon.type === "online" ? (
-                  <>
-                    <Globe className="mr-1 h-3 w-3" /> Online
-                  </>
-                ) : (
-                  <>
-                    <Building className="mr-1 h-3 w-3" /> In-Person
-                  </>
-                )}
-              </Badge>
-            </div>
+        {filteredHackathons.map((hackathon) => {
+          const isRegistered = user && hackathon.registeredUserIds?.includes(user.id || user._id);
 
-            <CardHeader>
-              <CardTitle className="line-clamp-1">{hackathon.name}</CardTitle>
-              <CardDescription className="line-clamp-2 leading-relaxed">{hackathon.description}</CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-              {/* Hackathon Details */}
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Calendar className="h-4 w-4" />
-                  <span>
-                    {new Date(hackathon.date).toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="h-4 w-4" />
-                  <span>{hackathon.location}</span>
-                </div>
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <Users className="h-4 w-4" />
-                  <span>{hackathon.participants} participants</span>
-                </div>
+          return (
+            <Card
+              key={hackathon._id}
+              className="group overflow-hidden border-border bg-card hover:border-primary/50 transition-all"
+            >
+              {/* Hackathon Image */}
+              <div className="relative h-48 w-full overflow-hidden bg-muted">
+                <img
+                  src={hackathon.image || "/placeholder.svg"}
+                  alt={hackathon.name}
+                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                />
+                <Badge
+                  className={`absolute right-3 top-3 ${hackathon.type === "online"
+                      ? "bg-accent/90 text-accent-foreground"
+                      : "bg-primary/90 text-primary-foreground"
+                    }`}
+                >
+                  {hackathon.type === "online" ? (
+                    <>
+                      <Globe className="mr-1 h-3 w-3" /> Online
+                    </>
+                  ) : (
+                    <>
+                      <Building className="mr-1 h-3 w-3" /> In-Person
+                    </>
+                  )}
+                </Badge>
               </div>
 
-              {/* View Button */}
-              <Button className="w-full bg-transparent" variant="outline">
-                View Details
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
+              <CardHeader>
+                <CardTitle className="line-clamp-1">{hackathon.name}</CardTitle>
+                <CardDescription className="line-clamp-2 leading-relaxed">{hackathon.description}</CardDescription>
+              </CardHeader>
+
+              <CardContent className="space-y-4">
+                {/* Hackathon Details */}
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span>
+                      {new Date(hackathon.date).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="h-4 w-4" />
+                    <span>{hackathon.location}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Users className="h-4 w-4" />
+                    <span>{hackathon.participants} participants</span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="space-y-3">
+                  <Button
+                    className="w-full"
+                    onClick={() => handleRegister(hackathon._id)}
+                    disabled={isRegistered || registering === hackathon._id}
+                    variant={isRegistered ? "secondary" : "default"}
+                  >
+                    {isRegistered ? (
+                      <><CheckCircle2 className="mr-2 h-4 w-4" /> Registered</>
+                    ) : registering === hackathon._id ? (
+                      "Registering..."
+                    ) : (
+                      "Register Now"
+                    )}
+                  </Button>
+                  <Button className="w-full bg-transparent" variant="outline">
+                    View Details
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )
+        })}
       </div>
 
       {/* Empty State */}

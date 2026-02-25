@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { X } from "lucide-react"
 
 export default function SignupPage() {
@@ -21,6 +22,8 @@ export default function SignupPage() {
     password: "",
     bio: "",
     skills: [],
+    gender: "gender",
+    github: "",
   })
 
   const [currentSkill, setCurrentSkill] = useState("")
@@ -104,6 +107,38 @@ export default function SignupPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  className="bg-input"
+                />
+              </div>
+
+              {/* Gender Field */}
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender *</Label>
+                <Select
+                  value={formData.gender}
+                  onValueChange={(value) => setFormData({ ...formData, gender: value })}
+                >
+                  <SelectTrigger className="bg-input w-full">
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Github Field */}
+              <div className="space-y-2">
+                <Label htmlFor="github">GitHub Profile URL</Label>
+                <Input
+                  id="github"
+                  name="github"
+                  type="url"
+                  placeholder="https://github.com/..."
+                  value={formData.github}
+                  onChange={handleChange}
                   className="bg-input"
                 />
               </div>

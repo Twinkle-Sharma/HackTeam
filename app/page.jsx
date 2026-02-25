@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Code2, Users, MessageSquare, Trophy } from "lucide-react"
+import { RecommendationSection } from "@/components/RecommendationSection"
 
 export default function Home() {
   const features = [
@@ -68,6 +69,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Recommended Section */}
+      <RecommendationSection />
 
       {/* Features Grid */}
       <section className="container py-16">

@@ -18,49 +18,63 @@ export function AuthProvider({ children }) {
     setLoading(false)
   }, [])
 
-  const signup = (userData) => {
-    const newUser = {
-      id: Date.now(),
-      ...userData,
-      avatar: "/diverse-user-avatars.png",
-      lookingForTeam: true,
+  const signup = async (userData) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Signup failed');
+
+      setUser(data.user);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("currentUser", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+      }
+      return data.user;
+    } catch (err) {
+      console.error(err);
+      throw err;
     }
-    setUser(newUser)
-    if (typeof window !== "undefined") {
-      localStorage.setItem("currentUser", JSON.stringify(newUser))
-    }
-    return newUser
   }
 
-  const login = (email) => {
-    const mockUser = {
-      id: 1,
-      name: "Demo User",
-      email: email,
-      skills: ["React", "Node.js"],
-      bio: "Software developer",
-      avatar: "/diverse-user-avatars.png",
-      lookingForTeam: true,
+  const login = async (email, password) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Login failed');
+
+      setUser(data.user);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("currentUser", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+      }
+      return data.user;
+    } catch (err) {
+      console.error(err);
+      throw err;
     }
-    setUser(mockUser)
-    if (typeof window !== "undefined") {
-      localStorage.setItem("currentUser", JSON.stringify(mockUser))
-    }
-    return mockUser
   }
 
   const logout = () => {
-    setUser(null)
+    setUser(null);
     if (typeof window !== "undefined") {
-      localStorage.removeItem("currentUser")
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("token");
     }
   }
 
   const updateProfile = (updates) => {
-    const updated = { ...user, ...updates }
-    setUser(updated)
+    const updated = { ...user, ...updates };
+    setUser(updated);
     if (typeof window !== "undefined") {
-      localStorage.setItem("currentUser", JSON.stringify(updated))
+      localStorage.setItem("currentUser", JSON.stringify(updated));
     }
   }
 

@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { X, Edit2, Save } from "lucide-react"
+import { X, Edit2, Save, Calendar, MapPin, Building, Globe } from "lucide-react"
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -21,8 +21,45 @@ export default function ProfilePage() {
     email: "",
     bio: "",
     skills: [],
+    github: "",
   })
   const [currentSkill, setCurrentSkill] = useState("")
+  const [profileData, setProfileData] = useState(null)
+  const [loadingProfile, setLoadingProfile] = useState(true)
+
+  // Fetch full profile data
+  useEffect(() => {
+    if (!user) {
+      setLoadingProfile(false)
+      return
+    }
+
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem("token")
+        if (!token) {
+          setLoadingProfile(false)
+          return
+        }
+
+        const res = await fetch("http://localhost:5000/api/users/me", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        const data = await res.json()
+        if (res.ok) {
+          setProfileData(data)
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile", error)
+      } finally {
+        setLoadingProfile(false)
+      }
+    }
+
+    fetchProfile()
+  }, [user])
 
   // Redirect if not logged in
   useEffect(() => {
@@ -34,6 +71,7 @@ export default function ProfilePage() {
         email: user.email || "",
         bio: user.bio || "",
         skills: user.skills || [],
+        github: user.github || "",
       })
     }
   }, [user, router])
@@ -76,6 +114,7 @@ export default function ProfilePage() {
       email: user.email || "",
       bio: user.bio || "",
       skills: user.skills || [],
+      github: user.github || "",
     })
     setIsEditing(false)
   }
@@ -152,6 +191,18 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-2">
+                  <Label htmlFor="github">GitHub Profile URL</Label>
+                  <Input
+                    id="github"
+                    name="github"
+                    type="url"
+                    value={formData.github}
+                    onChange={handleChange}
+                    className="bg-input"
+                  />
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="skills">Skills</Label>
                   <div className="flex gap-2">
                     <Input
@@ -212,6 +263,17 @@ export default function ProfilePage() {
                   <p className="mt-2 text-foreground leading-relaxed">{user.bio || "No bio added yet."}</p>
                 </div>
 
+                {user.github && (
+                  <div>
+                    <Label className="text-muted-foreground">GitHub Profile</Label>
+                    <p className="mt-2 text-foreground leading-relaxed">
+                      <a href={user.github} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                        {user.github}
+                      </a>
+                    </p>
+                  </div>
+                )}
+
                 <div>
                   <Label className="text-muted-foreground">Skills</Label>
                   <div className="mt-2 flex flex-wrap gap-2">
@@ -225,6 +287,57 @@ export default function ProfilePage() {
                       <p className="text-muted-foreground">No skills added yet.</p>
                     )}
                   </div>
+                </div>
+
+                <div className="pt-6 border-t border-border mt-6">
+                  <Label className="text-lg font-semibold block mb-4">Registered Hackathons</Label>
+                  {loadingProfile ? (
+                    <div className="flex items-center space-x-2 text-muted-foreground">
+                      <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+                      <p>Loading hackathons...</p>
+                    </div>
+                  ) : profileData?.registeredHackathons && profileData.registeredHackathons.length > 0 ? (
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {profileData.registeredHackathons.map((hackathon) => (
+                        <Card key={hackathon._id} className="overflow-hidden border-border bg-card">
+                          <div className="flex h-full flex-col">
+                            {hackathon.image && (
+                              <div className="h-24 w-full bg-muted">
+                                <img
+                                  src={hackathon.image || "/placeholder.svg"}
+                                  alt={hackathon.name}
+                                  className="h-full w-full object-cover"
+                                />
+                              </div>
+                            )}
+                            <div className="p-4 flex-1 flex flex-col justify-between">
+                              <div>
+                                <h4 className="font-semibold line-clamp-1">{hackathon.name}</h4>
+                                <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                                  <div className="flex items-center gap-1.5">
+                                    <Calendar className="h-3.5 w-3.5 shrink-0" />
+                                    <span>{new Date(hackathon.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <MapPin className="h-3.5 w-3.5 shrink-0" />
+                                    <span className="line-clamp-1">{hackathon.location}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="mt-3">
+                                <Badge variant="outline" className="text-xs font-normal">
+                                  {hackathon.type === 'online' ? <Globe className="mr-1 h-3 w-3" /> : <Building className="mr-1 h-3 w-3" />}
+                                  {hackathon.type === 'online' ? 'Online' : 'In-Person'}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground bg-muted/50 p-4 rounded-md border border-border">You haven't registered for any hackathons yet.</p>
+                  )}
                 </div>
               </div>
             )}

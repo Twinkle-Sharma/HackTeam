@@ -17,9 +17,9 @@ export default function Header() {
     { href: "/team-finder", label: "Find Teammates" },
     ...(user
       ? [
-          { href: "/profile", label: "Profile" },
-          { href: "/chat", label: "Chat" },
-        ]
+        { href: "/profile", label: "Profile" },
+        { href: "/chat", label: "Chat" },
+      ]
       : []),
   ]
 
@@ -38,9 +38,8 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                pathname === link.href ? "text-primary" : "text-muted-foreground"
-              }`}
+              className={`text-sm font-medium transition-colors hover:text-primary ${pathname === link.href ? "text-primary" : "text-muted-foreground"
+                }`}
             >
               {link.label}
             </Link>
@@ -61,9 +60,14 @@ export default function Header() {
               </Button>
             </>
           ) : (
-            <Link href="/signup">
-              <Button size="sm">Get Started</Button>
-            </Link>
+            <div className="flex gap-2">
+              <Link href="/login">
+                <Button size="sm">Log In</Button>
+              </Link>
+              <Link href="/signup">
+                <Button size="sm">Sign Up</Button>
+              </Link>
+            </div>
           )}
         </div>
       </div>
