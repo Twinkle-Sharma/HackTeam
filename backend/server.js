@@ -16,8 +16,18 @@ const hackathonRoutes = require('./routes/hackathons');
 const recommendationRoutes = require('./routes/recommendations');
 const Message = require('./models/Message');
 
+const chatRoutes = require('./routes/chat');
+
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+    'http://localhost:3000',
+    process.env.FRONTEND_URL, // Add your Vercel URL here
+].filter(Boolean);
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
 app.use(express.json());
 
 // Routes
@@ -26,6 +36,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/hackathons', hackathonRoutes);
 app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/chat', chatRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.DATABASE_URL)

@@ -8,7 +8,7 @@ const router = express.Router();
 // Register
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, password, gender, github } = req.body;
+        const { name, email, password, gender, github, bio, skills } = req.body;
 
         // Check if user exists
         let user = await User.findOne({ email });
@@ -31,14 +31,14 @@ router.post('/register', async (req, res) => {
         }
 
         // Create user
-        user = new User({ name, email, password: hashedPassword, gender, github, avatar });
+        user = new User({ name, email, password: hashedPassword, gender, github, avatar, bio, skills });
         await user.save();
 
         // Create token
         const payload = { user: { id: user._id } };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-        res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email } });
+        res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, bio: user.bio, skills: user.skills, github: user.github, avatar: user.avatar } });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
         const payload = { user: { id: user._id } };
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
 
-        res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
+        res.json({ token, user: { id: user._id, name: user.name, email: user.email, bio: user.bio, skills: user.skills, github: user.github, avatar: user.avatar } });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

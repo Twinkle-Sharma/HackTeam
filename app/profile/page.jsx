@@ -4,6 +4,8 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/contexts/auth-context"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+import { API_URL } from "@/lib/constants"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { X, Edit2, Save, Calendar, MapPin, Building, Globe } from "lucide-react"
+import { RecommendationSection } from "@/components/RecommendationSection"
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -42,7 +45,7 @@ export default function ProfilePage() {
           return
         }
 
-        const res = await fetch("http://localhost:5000/api/users/me", {
+        const res = await fetch(`${API_URL}/api/users/profile`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -344,6 +347,8 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Recommendation section removed as requested */}
     </div>
   )
 }

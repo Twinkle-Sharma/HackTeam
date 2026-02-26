@@ -2,11 +2,14 @@
 
 import { AuthProvider } from "@/lib/contexts/auth-context"
 import { ChatProvider } from "@/lib/contexts/chat-context"
+import { RecommendationProvider } from "@/lib/contexts/recommendation-context"
 
 export default function Providers({ children }) {
   return (
     <AuthProvider>
-      <ChatProvider>{children}</ChatProvider>
+      <RecommendationProvider>
+        <ChatProvider>{children}</ChatProvider>
+      </RecommendationProvider>
     </AuthProvider>
   )
 }

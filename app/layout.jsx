@@ -9,8 +9,10 @@ const geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata = {
   title: "HackTeam - Find Your Perfect Hackathon Team",
   description: "Connect with developers, designers, and innovators to build amazing projects at hackathons.",
-    generator: 'v0.app'
+  generator: 'v0.app'
 }
+
+import { AiChatBox } from "@/components/AiChatBox"
 
 export default function RootLayout({ children }) {
   return (
@@ -19,6 +21,7 @@ export default function RootLayout({ children }) {
         <Providers>
           <Header />
           <main>{children}</main>
+          <AiChatBox />
         </Providers>
       </body>
     </html>

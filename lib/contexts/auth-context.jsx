@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect } from "react"
+import { API_URL } from "@/lib/constants"
 
 const AuthContext = createContext(undefined)
 
@@ -20,7 +21,7 @@ export function AuthProvider({ children }) {
 
   const signup = async (userData) => {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
@@ -42,7 +43,7 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

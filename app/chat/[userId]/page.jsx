@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Send, ArrowLeft } from "lucide-react"
+import { API_URL } from "@/lib/constants"
 
 export default function ChatPage() {
     const { userId } = useParams()
@@ -39,7 +40,7 @@ export default function ChatPage() {
             }
             try {
                 const token = localStorage.getItem('token')
-                const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+                const res = await fetch(`${API_URL}/api/users/${userId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -62,7 +63,7 @@ export default function ChatPage() {
         const room = [user.id || user._id, targetUser._id].sort().join('-')
         setRoomId(room)
 
-        const newSocket = io("http://localhost:5000")
+        const newSocket = io(API_URL)
 
         newSocket.on("connect", () => {
             newSocket.emit("join_room", room)
@@ -78,7 +79,7 @@ export default function ChatPage() {
         const fetchMessages = async () => {
             try {
                 const token = localStorage.getItem('token')
-                const res = await fetch(`http://localhost:5000/api/messages/${room}`, {
+                const res = await fetch(`${API_URL}/api/messages/${room}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 })
                 if (res.ok) {

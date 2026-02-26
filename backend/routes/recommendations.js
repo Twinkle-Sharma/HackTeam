@@ -25,19 +25,27 @@ router.get('/:userId', async (req, res) => {
         const recommendations = await getRecommendations(user, hackathons, otherUsers);
         console.log('Gemini recommendations received:', JSON.stringify(recommendations));
 
-        // Map back the recommendations with full object data if needed, 
-        // but for now the AI returns reasons which is good.
-        // We can enrich the data here.
+        const recHackathons = Array.isArray(recommendations.recommendedHackathons)
+            ? recommendations.recommendedHackathons
+            : Array.isArray(recommendations.hackathons) ? recommendations.hackathons : [];
 
-        const enrichedHackathons = recommendations.recommendedHackathons.map(rec => {
-            const h = hackathons.find(hack => hack.name === rec.id || hack._id.toString() === rec.id);
-            return { ...h?.toObject(), reason: rec.reason };
-        }).filter(h => h.name); // Filter out any that didn't match
+        const recTeammates = Array.isArray(recommendations.recommendedTeammates)
+            ? recommendations.recommendedTeammates
+            : Array.isArray(recommendations.teammates) ? recommendations.teammates : [];
 
-        const enrichedTeammates = recommendations.recommendedTeammates.map(rec => {
-            const u = otherUsers.find(user => user.name === rec.id || user._id.toString() === rec.id);
-            return { ...u?.toObject(), reason: rec.reason };
-        }).filter(u => u.name);
+        const enrichedHackathons = recHackathons.map(rec => {
+            const idToMatch = rec.id || rec._id;
+            const h = hackathons.find(hack => hack.name === idToMatch || hack._id.toString() === idToMatch);
+            if (!h) return null;
+            return { ...h.toObject(), reason: rec.reason };
+        }).filter(Boolean);
+
+        const enrichedTeammates = recTeammates.map(rec => {
+            const idToMatch = rec.id || rec._id;
+            const u = otherUsers.find(user => user.name === idToMatch || user._id.toString() === idToMatch);
+            if (!u) return null;
+            return { ...u.toObject(), reason: rec.reason };
+        }).filter(Boolean);
 
         res.json({
             recommendedHackathons: enrichedHackathons,

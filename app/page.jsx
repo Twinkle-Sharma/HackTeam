@@ -70,8 +70,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Recommended Section */}
-      <RecommendationSection />
+      {/* Recommended Section removed as requested */}
 
       {/* Features Grid */}
       <section className="container py-16">

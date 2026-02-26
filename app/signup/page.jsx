@@ -56,7 +56,7 @@ export default function SignupPage() {
   }
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (formData.skills.length === 0) {
@@ -64,11 +64,15 @@ export default function SignupPage() {
       return
     }
 
-    // Create new user
-    signup(formData)
+    try {
+      // Create new user
+      await signup(formData)
 
-    // Redirect to profile
-    router.push("/profile")
+      // Redirect to profile
+      router.push("/profile")
+    } catch (error) {
+      alert("Signup failed: " + error.message)
+    }
   }
 
   return (

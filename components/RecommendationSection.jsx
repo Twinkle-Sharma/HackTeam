@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Trophy, Users, Loader2, Sparkles } from "lucide-react"
 import Link from "next/link"
+import { API_URL } from "@/lib/constants"
 
 export function RecommendationSection() {
     const { user } = useAuth()
@@ -19,7 +20,7 @@ export function RecommendationSection() {
 
             setLoading(true)
             try {
-                const res = await fetch(`http://localhost:5000/api/recommendations/${user._id}`)
+                const res = await fetch(`${API_URL}/api/recommendations/${user._id}`)
                 if (!res.ok) throw new Error("Failed to fetch recommendations")
                 const data = await res.json()
                 setRecommendations(data)
