@@ -45,7 +45,7 @@ export default function ProfilePage() {
           return
         }
 
-        const res = await fetch(`${API_URL}/api/users/profile`, {
+        const res = await fetch(`${API_URL}/api/users/me`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -105,10 +105,15 @@ export default function ProfilePage() {
     })
   }
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault()
-    updateProfile(formData)
-    setIsEditing(false)
+    try {
+      await updateProfile(formData)
+      toast.success("Profile updated successfully")
+      setIsEditing(false)
+    } catch (err) {
+      toast.error(err.message || "Failed to update profile")
+    }
   }
 
   const handleCancel = () => {

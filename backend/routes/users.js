@@ -42,6 +42,31 @@ router.get('/me', auth, async (req, res) => {
     }
 });
 
+// Update current user profile - Protected Route
+router.put('/me', auth, async (req, res) => {
+    try {
+        const { name, bio, skills, github, gender } = req.body;
+        const updates = {};
+        if (name) updates.name = name;
+        if (bio !== undefined) updates.bio = bio;
+        if (skills) updates.skills = skills;
+        if (github !== undefined) updates.github = github;
+        if (gender) updates.gender = gender;
+
+        const user = await User.findByIdAndUpdate(
+            req.user.id,
+            { $set: updates },
+            { new: true, runValidators: true }
+        ).select('-password').populate('registeredHackathons');
+
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Get single user by ID - Protected Route
 router.get('/:id', auth, async (req, res) => {
     try {

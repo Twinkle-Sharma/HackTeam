@@ -71,11 +71,28 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const updateProfile = (updates) => {
-    const updated = { ...user, ...updates };
-    setUser(updated);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("currentUser", JSON.stringify(updated));
+  const updateProfile = async (updates) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/api/users/me`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updates)
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Update failed');
+
+      setUser(data);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("currentUser", JSON.stringify(data));
+      }
+      return data;
+    } catch (err) {
+      console.error(err);
+      throw err;
     }
   }
 
