@@ -10,6 +10,16 @@ router.post('/register', async (req, res) => {
     try {
         const { name, email, password, gender, github, bio, skills } = req.body;
 
+        // Validation
+        if (!name || name.trim().length < 3) {
+            return res.status(400).json({ message: 'Name must be at least 3 characters long' });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+            return res.status(400).json({ message: 'Please enter a valid email address' });
+        }
+
         // Check if user exists
         let user = await User.findOne({ email });
         if (user) {
@@ -48,6 +58,11 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+            return res.status(400).json({ message: 'Please enter a valid email address' });
+        }
 
         // Find user
         const user = await User.findOne({ email });

@@ -36,6 +36,14 @@ export default function LoginPage() {
         setIsLoading(true)
         setErrorMsg("")
 
+        // Email validation: simple regex check
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(formData.email)) {
+            setErrorMsg("Please enter a valid email address")
+            setIsLoading(false)
+            return
+        }
+
         try {
             await login(formData.email, formData.password)
             // Redirect to profile upon successful login

@@ -119,6 +119,13 @@ export default function ProfilePage() {
 
   const handleSave = async (e) => {
     e.preventDefault()
+
+    // Name validation
+    if (formData.name.trim().length < 3) {
+      toast.error("Name must be at least 3 characters long")
+      return
+    }
+
     try {
       await updateProfile(formData)
       toast.success("Profile updated successfully")
@@ -183,6 +190,9 @@ export default function ProfilePage() {
                     value={formData.name}
                     onChange={handleChange}
                     required
+                    minLength={3}
+                    onInvalid={(e) => e.target.setCustomValidity("Name must be at least 3 characters long")}
+                    onInput={(e) => e.target.setCustomValidity("")}
                     className="bg-input"
                   />
                 </div>

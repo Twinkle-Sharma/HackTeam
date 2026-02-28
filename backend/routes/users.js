@@ -46,6 +46,12 @@ router.get('/me', auth, async (req, res) => {
 router.put('/me', auth, async (req, res) => {
     try {
         const { name, bio, skills, github, gender } = req.body;
+
+        // Validation
+        if (name && name.trim().length < 3) {
+            return res.status(400).json({ message: 'Name must be at least 3 characters long' });
+        }
+
         const updates = {};
         if (name) updates.name = name;
         if (bio !== undefined) updates.bio = bio;

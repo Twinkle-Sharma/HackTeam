@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useAuth } from "@/lib/contexts/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,11 +23,13 @@ export default function SignupPage() {
     password: "",
     bio: "",
     skills: [],
-    gender: "gender",
+    gender: "",
     github: "",
   })
 
   const [currentSkill, setCurrentSkill] = useState("")
+  const [errorMsg, setErrorMsg] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -34,6 +37,8 @@ export default function SignupPage() {
       ...formData,
       [e.target.name]: e.target.value,
     })
+    // Clear error on typing
+    if (errorMsg) setErrorMsg("")
   }
 
   // Add skill to the list
@@ -58,9 +63,34 @@ export default function SignupPage() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setIsLoading(true)
+    setErrorMsg("")
+
+    // Name validation: at least 3 characters
+    if (formData.name.trim().length < 3) {
+      setErrorMsg("Name must be at least 3 characters long")
+      setIsLoading(false)
+      return
+    }
+
+    // Email validation: simple regex check
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      setErrorMsg("Please enter a valid email address")
+      setIsLoading(false)
+      return
+    }
+
+    // Gender validation
+    if (!formData.gender) {
+      setErrorMsg("Please select your gender")
+      setIsLoading(false)
+      return
+    }
 
     if (formData.skills.length === 0) {
-      alert("Please add at least one skill")
+      setErrorMsg("Please add at least one skill")
+      setIsLoading(false)
       return
     }
 
@@ -71,7 +101,9 @@ export default function SignupPage() {
       // Redirect to profile
       router.push("/profile")
     } catch (error) {
-      alert("Signup failed: " + error.message)
+      setErrorMsg(error.message || "Signup failed. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -85,6 +117,12 @@ export default function SignupPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Error Message */}
+              {errorMsg && (
+                <div className="p-3 bg-red-500/10 border border-red-500 text-red-500 rounded-md text-sm">
+                  {errorMsg}
+                </div>
+              )}
               {/* Name Field */}
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name *</Label>
@@ -96,6 +134,9 @@ export default function SignupPage() {
                   value={formData.name}
                   onChange={handleChange}
                   required
+                  minLength={3}
+                  onInvalid={(e) => e.target.setCustomValidity("Name must be at least 3 characters long")}
+                  onInput={(e) => e.target.setCustomValidity("")}
                   className="bg-input"
                 />
               </div>
@@ -120,7 +161,10 @@ export default function SignupPage() {
                 <Label htmlFor="gender">Gender *</Label>
                 <Select
                   value={formData.gender}
-                  onValueChange={(value) => setFormData({ ...formData, gender: value })}
+                  onValueChange={(value) => {
+                    setFormData({ ...formData, gender: value })
+                    if (errorMsg) setErrorMsg("")
+                  }}
                 >
                   <SelectTrigger className="bg-input w-full">
                     <SelectValue placeholder="Select gender" />
@@ -224,9 +268,16 @@ export default function SignupPage() {
               </div>
 
               {/* Submit Button */}
-              <Button type="submit" className="w-full" size="lg">
-                Create Account
+              <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+                {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
+
+              <div className="mt-6 text-center text-sm">
+                Already have an account?{" "}
+                <Link href="/login" className="text-primary hover:underline">
+                  Log in
+                </Link>
+              </div>
             </form>
           </CardContent>
         </Card>
