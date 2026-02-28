@@ -43,12 +43,13 @@ export default function Home() {
             Connect. Collaborate. Create.
           </div>
 
-          <h1 className="mb-6 text-5xl font-bold leading-tight tracking-tight md:text-6xl lg:text-7xl">
+          <h1 className="mb-6 text-4xl font-bold leading-tight tracking-tight md:text-6xl lg:text-7xl">
             Find Your Perfect{" "}
             <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
               Hackathon Team
             </span>
           </h1>
+
 
           <p className="mb-10 text-lg text-muted-foreground leading-relaxed md:text-xl">
             Connect with talented developers, designers, and innovators. Build amazing projects together at hackathons
@@ -92,22 +93,23 @@ export default function Home() {
       {/* Stats Section */}
       <section className="container py-16">
         <Card className="border-border bg-gradient-to-br from-primary/10 via-accent/5 to-primary/10">
-          <CardContent className="p-12">
-            <div className="grid gap-8 md:grid-cols-3">
+          <CardContent className="p-8 md:p-12">
+            <div className="grid gap-8 grid-cols-1 md:grid-cols-3">
               <div className="text-center">
-                <div className="mb-2 text-4xl font-bold text-primary">500+</div>
-                <div className="text-sm text-muted-foreground">Active Developers</div>
+                <div className="mb-1 text-3xl md:text-4xl font-bold text-primary">500+</div>
+                <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">Active Developers</div>
               </div>
               <div className="text-center">
-                <div className="mb-2 text-4xl font-bold text-primary">100+</div>
-                <div className="text-sm text-muted-foreground">Hackathons Listed</div>
+                <div className="mb-1 text-3xl md:text-4xl font-bold text-primary">100+</div>
+                <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">Hackathons Listed</div>
               </div>
               <div className="text-center">
-                <div className="mb-2 text-4xl font-bold text-primary">250+</div>
-                <div className="text-sm text-muted-foreground">Teams Formed</div>
+                <div className="mb-1 text-3xl md:text-4xl font-bold text-primary">250+</div>
+                <div className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">Teams Formed</div>
               </div>
             </div>
           </CardContent>
+
         </Card>
       </section>
 

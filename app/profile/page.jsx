@@ -17,7 +17,8 @@ import { RecommendationSection } from "@/components/RecommendationSection"
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { user, updateProfile } = useAuth()
+  const { user, updateProfile, loading: authLoading } = useAuth()
+
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -66,9 +67,11 @@ export default function ProfilePage() {
 
   // Redirect if not logged in
   useEffect(() => {
-    if (!user) {
-      router.push("/signup")
-    } else {
+    if (!authLoading && !user) {
+      router.push("/login")
+    } else if (user) {
+
+
       setFormData({
         name: user.name || "",
         email: user.email || "",
@@ -79,7 +82,16 @@ export default function ProfilePage() {
     }
   }, [user, router])
 
+  if (authLoading) {
+    return (
+      <div className="container py-32 flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
   if (!user) return null
+
 
   const handleChange = (e) => {
     setFormData({
@@ -128,7 +140,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container py-16">
+    <div className="container py-8 md:py-16">
+
       <div className="mx-auto max-w-3xl">
         <Card className="border-border bg-card">
           <CardHeader>
@@ -147,16 +160,17 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent>
             {/* Avatar Section */}
-            <div className="mb-8 flex items-center gap-6">
-              <Avatar className="h-24 w-24 ring-2 ring-primary/20">
+            <div className="mb-8 flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6 text-center sm:text-left">
+              <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-2 ring-primary/20">
                 <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
-                <AvatarFallback className="text-2xl">{user.name?.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="text-xl sm:text-2xl">{user.name?.charAt(0)}</AvatarFallback>
               </Avatar>
-              <div>
+              <div className="py-2">
                 <h3 className="text-xl font-semibold">{user.name}</h3>
                 <p className="text-sm text-muted-foreground">{user.email}</p>
               </div>
             </div>
+
 
             {isEditing ? (
               <form onSubmit={handleSave} className="space-y-6">
@@ -305,7 +319,8 @@ export default function ProfilePage() {
                       <p>Loading hackathons...</p>
                     </div>
                   ) : profileData?.registeredHackathons && profileData.registeredHackathons.length > 0 ? (
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+
                       {profileData.registeredHackathons.map((hackathon) => (
                         <Card key={hackathon._id} className="overflow-hidden border-border bg-card">
                           <div className="flex h-full flex-col">

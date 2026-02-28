@@ -58,11 +58,14 @@ app.get('/api/health', (req, res) => {
 
 app.get('/api/messages/:roomId', async (req, res) => {
     try {
-        const messages = await Message.find({ roomId: req.params.roomId }).sort({ createdAt: 1 });
+        const messages = await Message.find({ roomId: req.params.roomId })
+            .populate('senderId', 'name')
+            .sort({ createdAt: 1 });
         const formatted = messages.map(msg => ({
             roomId: msg.roomId,
             message: msg.content,
-            senderId: msg.senderId.toString(),
+            senderId: msg.senderId?._id.toString(),
+            senderName: msg.senderId?.name || "Unknown",
             timestamp: msg.createdAt
         }));
         res.json(formatted);
@@ -71,31 +74,47 @@ app.get('/api/messages/:roomId', async (req, res) => {
     }
 });
 
+
 // Socket.IO Connection Handling
 io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
 
     socket.on('join_room', (roomId) => {
         socket.join(roomId);
-        console.log(`User ${socket.id} joined room ${roomId}`);
+        console.log(`User ${socket.id} joined room/identifier ${roomId}`);
     });
 
+
     socket.on('send_message', async (data) => {
-        // data should contain { roomId, message, senderId }
+        // data should contain { roomId, message, senderId, receiverId (optional) }
         try {
             const newMessage = new Message({
                 roomId: data.roomId,
                 content: data.message,
-                senderId: data.senderId
+                senderId: data.senderId,
+                receiverId: data.receiverId // Now including receiverId for DMs
             });
             await newMessage.save();
 
-            // Broadcast message
-            io.to(data.roomId).emit('receive_message', data);
+            // Broadcast message to room
+            io.to(data.roomId).emit('receive_message', {
+                ...data,
+                id: newMessage._id
+            });
+
+            // Also send to personal rooms for real-time sidebar updates
+            if (data.receiverId) {
+                io.to(data.receiverId.toString()).emit('receive_message', {
+                    ...data,
+                    id: newMessage._id
+                });
+            }
+
         } catch (error) {
             console.error('Error saving message:', error);
         }
     });
+
 
     socket.on('disconnect', () => {
         console.log(`User disconnected: ${socket.id}`);
